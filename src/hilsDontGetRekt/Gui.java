@@ -13,12 +13,10 @@ import java.util.ArrayList;
 
 import javax.swing.JPanel;
 
+import level.LevelList;
 import map.Grid;
 
 public class Gui extends JPanel implements KeyListener {
-	
-	
-	
 	
 	Grid grid;
 	
@@ -27,11 +25,15 @@ public class Gui extends JPanel implements KeyListener {
 		addKeyListener(this);
 	}
 
-	BufferedImage image=new BufferedImage(1600, 1000, BufferedImage.TYPE_INT_RGB);
+	BufferedImage image=new BufferedImage(816, 838, BufferedImage.TYPE_INT_RGB);
 	Graphics2D g2d=(Graphics2D) image.getGraphics();
 	
 	boolean setup=true;
 	boolean dead=false;
+	
+	
+	int currentLevel=0;
+	LevelList levels=new LevelList();
 	
 	//här ritar vi gui
 	public void paint(Graphics g) {
@@ -42,14 +44,9 @@ public class Gui extends JPanel implements KeyListener {
 		
 		
 		if(setup) {
-			grid=new Grid(800, 800, 40);
-			//player=new Player((int)grid.getPlayerPos().getX(),(int) grid.getPlayerPos().getY(), 30);
+			System.out.println(currentLevel);
+			grid=new Grid(800, 800, 40,levels.getLevels(currentLevel));
 			
-			//enemy=new Enemy((int)grid.getEnemyPos().getX(),(int) grid.getEnemyPos().getY(), 30);
-			
-			//key=new Key((int)grid.getKeyPos().getX(),(int) grid.getKeyPos().getY(), 30);
-			
-			//goal=new Goal((int)grid.getGoalPos().getX(), (int)grid.getGoalPos().getY(), 30, 0);
 			
 			setup=false;
 		}
@@ -97,6 +94,8 @@ public class Gui extends JPanel implements KeyListener {
 		
 		
 		if(grid.getPlayer().getHitbox().intersect(grid.getGoal().getHitbox()) && grid.getKey().size()==0) {
+			currentLevel++;
+			setup=true;
 			System.out.println("you win");
 		}
 		

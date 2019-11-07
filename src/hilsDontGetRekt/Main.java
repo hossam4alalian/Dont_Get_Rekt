@@ -8,7 +8,7 @@ public class Main extends JFrame {
 	Gui g=new Gui();
 	private static JFrame frame;
 	public Main() {
-		setSize(1600,1000);
+		setSize(820, 840);
 		setLocationRelativeTo(null);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		add(g);

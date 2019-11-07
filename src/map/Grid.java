@@ -10,6 +10,7 @@ import hilsDontGetRekt.Goal;
 import hilsDontGetRekt.ImageLoader;
 import hilsDontGetRekt.Key;
 import hilsDontGetRekt.Player;
+import level.Level;
 import library.PVector2D;
 
 public class Grid {
@@ -21,7 +22,9 @@ public class Grid {
 	
 	
 	
-	private BufferedImage map=ImageLoader.loadImage("map1.png");
+	//private BufferedImage map=ImageLoader.loadImage("map1.png");
+	
+	
 	
 	
 	private Player player;
@@ -38,7 +41,7 @@ public class Grid {
 	
 	private PVector2D keyPos;
 	
-	public Grid(int width,int height, int size) {
+	public Grid(int width,int height, int size, Level level) {
 		this.width=width;
 		this.height=height;
 		this.size=size;
@@ -47,7 +50,7 @@ public class Grid {
 		for(int i=0;i<width/size;i++) {
 			for(int ii=0;ii<height/size;ii++) {
 				
-				Color color=new Color(map.getRGB(i, ii));
+				Color color=new Color(level.getMap().getRGB(i, ii));
 				if(color.getRGB()==new Color(0, 0, 0).getRGB()) {
 					cells.add(new Wall(i, ii,size,CellType.WALL));
 				}
