@@ -72,16 +72,16 @@ public class Enemy{
 		}*/
 		
 		
-		yvel=speed*Math.sin(angle);
+		/*yvel=speed*Math.sin(angle);
 		xvel=speed*Math.cos(angle);
 		
 		x-=xvel;
 		y+=yvel;
+		*/
 		
 		
 		
-		
-		AstarMove(grid, p,g2);
+		//AstarMove(grid, p,g2);
 		
 		
 		//System.out.println(x+" l");
@@ -111,43 +111,85 @@ public class Enemy{
 		
 		while(openList.size()>0) {
 			
-			for(int i=0;i<openList.size();i++) {
+			/*for(int i=0;i<openList.size();i++) {
 				g.setColor(Color.green);
 				g.fillRect(openList.get(i).getColumn()*40, openList.get(i).getRow()*40, 40, 40);
 				g.setColor(Color.white);
 				g.setFont(new Font("", Font.ITALIC, 10));
-				g.drawString(""+openList.get(i).gethCost(), openList.get(i).getColumn()*40, openList.get(i).getRow()*40);
-				g.drawString(""+openList.get(i).getgCost(), openList.get(i).getColumn()*40+25, openList.get(i).getRow()*40);
+				//g.drawString(""+openList.get(i).gethCost(), openList.get(i).getColumn()*40+5, openList.get(i).getRow()*40);
+				//g.drawString(""+openList.get(i).getgCost(), openList.get(i).getColumn()*40+25, openList.get(i).getRow()*40);
 			}
 			for(int i=0;i<closedList.size();i++) {
 				g.setColor(Color.red);
-				g.fillRect(openList.get(i).getColumn()*40, openList.get(i).getRow()*40, 40, 40);
+				g.fillRect(closedList.get(i).getColumn()*40, closedList.get(i).getRow()*40, 40, 40);
 				g.setColor(Color.white);
 				g.setFont(new Font("", Font.ITALIC, 10));
-				g.drawString(""+closedList.get(i).gethCost(), closedList.get(i).getColumn()*40, closedList.get(i).getRow()*40);
-				g.drawString(""+closedList.get(i).getgCost(), closedList.get(i).getColumn()*40+25, closedList.get(i).getRow()*40);
-			}
+				//g.drawString(""+closedList.get(i).gethCost(), closedList.get(i).getColumn()*40+5, closedList.get(i).getRow()*40);
+				//g.drawString(""+closedList.get(i).getgCost(), closedList.get(i).getColumn()*40+25, closedList.get(i).getRow()*40);
+			}*/
 			
 			
 			int index=0;
+			float min=100000;
 			for(int i=0;i<openList.size();i++) {
 				
-				float min=1000000;
+				
 				if(openList.get(i).gethCost()+openList.get(i).getgCost()<min) {
 					index=i;
+					min=openList.get(i).gethCost()+openList.get(i).getgCost();
 				}
 			}
 			spot current=openList.get(index);
+			
+			
+			if(current.gethCost()<0.2) {//måste ändras!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+				spot temp=current;
+				
+				
+				boolean done=false;
+				while(done==false) {
+					
+					
+					boolean doneTemp=true;
+					for(int i=0;i<closedList.size();i++) {
+						//System.out.println(closedList.get(i).getParentColumn()+"   "+temp.getColumn());
+						if(temp.getColumn()!=temp.getParentColumn() && temp.getColumn()!=temp.getParentColumn()) {
+							if(temp.getParentColumn()==closedList.get(i).getColumn() && temp.getParentRow()==closedList.get(i).getRow()) {
+								System.out.println(temp.getParentColumn()+"   "+closedList.get(i).getColumn());
+								temp=closedList.get(i);
+								doneTemp=false;
+								
+							}
+						}
+					}
+					System.out.println("************");
+					
+					if(doneTemp) {
+						done=true;
+					}
+					
+				}
+				
+				g.setColor(Color.green);
+				g.fillOval(temp.getColumn()*40, temp.getRow()*40, 40, 40);
+				
+				Vector2D moveDir=new Vector2D(new PVector2D(x/40, y/40), new PVector2D(temp.getColumn(), temp.getRow()));
+				
+				x+=Math.cos(moveDir.getAngle())*2;
+				y+=Math.sin(moveDir.getAngle())*2;
+				
+				return;
+			}
 			
 			closedList.add(current);
 			openList.remove(current);
 			
 			
 			
-			try {
+			
 			
 				
-			Cell leftCell=grid.getCell(colE-1, rowE);
+			Cell leftCell=grid.getCell(current.getColumn()-1, current.getRow());
 			
 			vec=new Vector2D(new PVector2D(leftCell.getColumn(), leftCell.getRow()), new PVector2D(p.getX()/40, p.getY()/40));
 			dis=(int)(vec.getMagnitude());
@@ -179,31 +221,287 @@ public class Enemy{
 			
 			
 			
-			Cell rightCell=grid.getCell(colE+1, rowE);
-			Cell upCell=grid.getCell(colE, rowE-1);
-			Cell downCell=grid.getCell(colE, rowE+1);
-			Cell leftupCell=grid.getCell(colE-1, rowE-1);
-			Cell leftdownCell=grid.getCell(colE-1, rowE+1);
-			Cell rightupCell=grid.getCell(colE+1, rowE-1);
-			Cell rightdownCell=grid.getCell(colE+1, rowE+1);
+			Cell rightCell=grid.getCell(current.getColumn()+1, current.getRow());
 			
 			
+			vec=new Vector2D(new PVector2D(rightCell.getColumn(), rightCell.getRow()), new PVector2D(p.getX()/40, p.getY()/40));
+			dis=(int)(vec.getMagnitude());
 			
-			
-			
-			
+			if(rightCell.getCellType()!=CellType.WALL && !isInArray(closedList, rightCell.getColumn(), rightCell.getRow())) {
+				if(!isInArray(openList, rightCell.getColumn(), rightCell.getRow())){
+					
+					openList.add(new spot(rightCell.getColumn(), rightCell.getRow(), current.getColumn(), current.getRow(), current.getgCost()+10, dis));
+					
+				}
+				else {
+					for(int i=0;i<openList.size();i++) {
+						if(openList.get(i).getColumn()==rightCell.getColumn() && openList.get(i).getRow()==rightCell.getRow()) {
+							float fCost=openList.get(i).getgCost()+openList.get(i).gethCost();
+							
+							if(openList.get(i).getgCost()>current.getgCost()+10) {
+								openList.get(i).setParentColumn(current.getColumn());
+								openList.get(i).setParentRow(current.getRow());
+							}
+							
+						}
+					}
+				}
 				
-				
-				
-				
-			
-				
-				
-			
 			}
-			catch (NullPointerException e) {
-				// TODO: handle exception
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			Cell upCell=grid.getCell(current.getColumn(), current.getRow()-1);
+			
+			
+			vec=new Vector2D(new PVector2D(upCell.getColumn(), upCell.getRow()), new PVector2D(p.getX()/40, p.getY()/40));
+			dis=(int)(vec.getMagnitude());
+			
+			if(upCell.getCellType()!=CellType.WALL && !isInArray(closedList, upCell.getColumn(), upCell.getRow())) {
+				if(!isInArray(openList, upCell.getColumn(), upCell.getRow())){
+					
+					openList.add(new spot(upCell.getColumn(), upCell.getRow(), current.getColumn(), current.getRow(), current.getgCost()+10, dis));
+					
+				}
+				else {
+					for(int i=0;i<openList.size();i++) {
+						if(openList.get(i).getColumn()==upCell.getColumn() && openList.get(i).getRow()==upCell.getRow()) {
+							float fCost=openList.get(i).getgCost()+openList.get(i).gethCost();
+							
+							if(openList.get(i).getgCost()>current.getgCost()+10) {
+								openList.get(i).setParentColumn(current.getColumn());
+								openList.get(i).setParentRow(current.getRow());
+							}
+							
+						}
+					}
+				}
+				
 			}
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			Cell downCell=grid.getCell(current.getColumn(), current.getRow()+1);
+			
+			
+			vec=new Vector2D(new PVector2D(downCell.getColumn(), downCell.getRow()), new PVector2D(p.getX()/40, p.getY()/40));
+			dis=(int)(vec.getMagnitude());
+			
+			if(downCell.getCellType()!=CellType.WALL && !isInArray(closedList, downCell.getColumn(), downCell.getRow())) {
+				if(!isInArray(openList, downCell.getColumn(), downCell.getRow())){
+					
+					openList.add(new spot(downCell.getColumn(), downCell.getRow(), current.getColumn(), current.getRow(), current.getgCost()+10, dis));
+					
+				}
+				else {
+					for(int i=0;i<openList.size();i++) {
+						if(openList.get(i).getColumn()==downCell.getColumn() && openList.get(i).getRow()==downCell.getRow()) {
+							float fCost=openList.get(i).getgCost()+openList.get(i).gethCost();
+							
+							if(openList.get(i).getgCost()>current.getgCost()+10) {
+								openList.get(i).setParentColumn(current.getColumn());
+								openList.get(i).setParentRow(current.getRow());
+							}
+							
+						}
+					}
+				}
+				
+			}
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			Cell leftupCell=grid.getCell(current.getColumn()-1, current.getRow()-1);
+
+			
+			vec=new Vector2D(new PVector2D(leftupCell.getColumn(), leftupCell.getRow()), new PVector2D(p.getX()/40, p.getY()/40));
+			dis=(int)(vec.getMagnitude());
+			
+			if(leftupCell.getCellType()!=CellType.WALL && !isInArray(closedList, leftupCell.getColumn(), leftupCell.getRow())) {
+				if(!isInArray(openList, leftupCell.getColumn(), leftupCell.getRow())){
+					
+					openList.add(new spot(leftupCell.getColumn(), leftupCell.getRow(), current.getColumn(), current.getRow(), current.getgCost()+14, dis));
+					
+				}
+				else {
+					for(int i=0;i<openList.size();i++) {
+						if(openList.get(i).getColumn()==leftupCell.getColumn() && openList.get(i).getRow()==leftupCell.getRow()) {
+							float fCost=openList.get(i).getgCost()+openList.get(i).gethCost();
+							
+							if(openList.get(i).getgCost()>current.getgCost()+14) {
+								openList.get(i).setParentColumn(current.getColumn());
+								openList.get(i).setParentRow(current.getRow());
+							}
+							
+						}
+					}
+				}
+				
+			}
+			
+			
+			
+			
+			
+			
+			
+			
+			Cell leftdownCell=grid.getCell(current.getColumn()-1, current.getRow()+1);
+			
+			
+			vec=new Vector2D(new PVector2D(leftdownCell.getColumn(), leftdownCell.getRow()), new PVector2D(p.getX()/40, p.getY()/40));
+			dis=(int)(vec.getMagnitude());
+			
+			if(leftdownCell.getCellType()!=CellType.WALL && !isInArray(closedList, leftdownCell.getColumn(), leftdownCell.getRow())) {
+				if(!isInArray(openList, leftdownCell.getColumn(), leftdownCell.getRow())){
+					
+					openList.add(new spot(leftdownCell.getColumn(), leftdownCell.getRow(), current.getColumn(), current.getRow(), current.getgCost()+14, dis));
+					
+				}
+				else {
+					for(int i=0;i<openList.size();i++) {
+						if(openList.get(i).getColumn()==leftdownCell.getColumn() && openList.get(i).getRow()==leftdownCell.getRow()) {
+							float fCost=openList.get(i).getgCost()+openList.get(i).gethCost();
+							
+							if(openList.get(i).getgCost()>current.getgCost()+14) {
+								openList.get(i).setParentColumn(current.getColumn());
+								openList.get(i).setParentRow(current.getRow());
+							}
+							
+						}
+					}
+				}
+				
+			}
+			
+			
+			
+			
+			
+			
+			Cell rightupCell=grid.getCell(current.getColumn()+1, current.getRow()-1);
+			
+			
+
+			
+			vec=new Vector2D(new PVector2D(rightupCell.getColumn(), rightupCell.getRow()), new PVector2D(p.getX()/40, p.getY()/40));
+			dis=(int)(vec.getMagnitude());
+			
+			if(rightupCell.getCellType()!=CellType.WALL && !isInArray(closedList, rightupCell.getColumn(), rightupCell.getRow())) {
+				if(!isInArray(openList, rightupCell.getColumn(), rightupCell.getRow())){
+					
+					openList.add(new spot(rightupCell.getColumn(), rightupCell.getRow(), current.getColumn(), current.getRow(), current.getgCost()+14, dis));
+					
+				}
+				else {
+					for(int i=0;i<openList.size();i++) {
+						if(openList.get(i).getColumn()==rightupCell.getColumn() && openList.get(i).getRow()==rightupCell.getRow()) {
+							float fCost=openList.get(i).getgCost()+openList.get(i).gethCost();
+							
+							if(openList.get(i).getgCost()>current.getgCost()+14) {
+								openList.get(i).setParentColumn(current.getColumn());
+								openList.get(i).setParentRow(current.getRow());
+							}
+							
+						}
+					}
+				}
+				
+			}
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			Cell rightdownCell=grid.getCell(current.getColumn()+1, current.getRow()+1);
+			
+			
+			
+			
+			vec=new Vector2D(new PVector2D(rightdownCell.getColumn(), rightdownCell.getRow()), new PVector2D(p.getX()/40, p.getY()/40));
+			dis=(int)(vec.getMagnitude());
+			
+			if(rightdownCell.getCellType()!=CellType.WALL && !isInArray(closedList, rightdownCell.getColumn(), rightdownCell.getRow())) {
+				if(!isInArray(openList, rightdownCell.getColumn(), rightdownCell.getRow())){
+					
+					openList.add(new spot(rightdownCell.getColumn(), rightdownCell.getRow(), current.getColumn(), current.getRow(), current.getgCost()+14, dis));
+					
+				}
+				else {
+					for(int i=0;i<openList.size();i++) {
+						if(openList.get(i).getColumn()==rightdownCell.getColumn() && openList.get(i).getRow()==rightdownCell.getRow()) {
+							float fCost=openList.get(i).getgCost()+openList.get(i).gethCost();
+							
+							if(openList.get(i).getgCost()>current.getgCost()+14) {
+								openList.get(i).setParentColumn(current.getColumn());
+								openList.get(i).setParentRow(current.getRow());
+							}
+							
+						}
+					}
+				}
+				
+			}
+			
+			
+			
+			
+				
+			
+			
+				
+				
+				
+			
+				
+				
+			
+		
 			
 		
 		}

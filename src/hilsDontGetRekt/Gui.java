@@ -35,6 +35,9 @@ public class Gui extends JPanel implements KeyListener {
 	
 	boolean setup=true;
 	boolean dead=false;
+	boolean paused=false;
+	
+	private int deathCount;
 	
 	
 	int currentLevel=0;
@@ -62,7 +65,7 @@ public class Gui extends JPanel implements KeyListener {
 			grid.getEnemy().setX(grid.getEnemyPos().getX());
 			grid.getEnemy().setY(grid.getEnemyPos().getY());
 			
-			
+			grid.getPlayer().setDeathCount(deathCount+1);
 			dead=false;
 		}
 		grid.draw(g2d);
@@ -96,7 +99,7 @@ public class Gui extends JPanel implements KeyListener {
 		
 		if(grid.getPlayer().getHitbox().intersect(grid.getEnemy().getHitbox())) {
 			dead=true;
-			grid.getPlayer().setDeathCount(grid.getPlayer().getDeathCount()+1);
+			
 			System.out.println(grid.getPlayer().getDeathCount());
 		}
 		
@@ -139,7 +142,7 @@ public class Gui extends JPanel implements KeyListener {
 			
 			if(grid.getTrap().get(i).getHitbox().intersect(grid.getPlayer().getHitbox())) {
 				dead=true;
-				grid.getPlayer().setDeathCount(grid.getPlayer().getDeathCount()+1);
+				
 				
 				
 			}
@@ -162,6 +165,11 @@ public class Gui extends JPanel implements KeyListener {
 		
 		g2d.setColor(Color.WHITE);
 		g2d.drawString("Level: "+(currentLevel+1), 620, 32);
+		
+		if(paused) {
+			g2d.setColor(Color.YELLOW);
+			g2d.drawString("---PAUSED---", 280, 400);
+		}
 	}
 		
 	
@@ -232,6 +240,22 @@ public class Gui extends JPanel implements KeyListener {
 			grid.getPlayer().setDown(true);
 		}
 		
+		if(e.getKeyCode()==KeyEvent.VK_P) {
+			if(paused==false) {
+				paused=true;
+			}
+			else if(paused) {
+				paused=false;
+			}
+			
+		}
+		
+		if(e.getKeyCode()==KeyEvent.VK_R) {
+			setup=true;
+			grid.getPlayer().setDeathCount(0);
+			currentLevel=0;
+		}
+		
 		
 	}
 
@@ -263,6 +287,14 @@ public class Gui extends JPanel implements KeyListener {
 	public void keyTyped(KeyEvent e) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	public int getDeathCount() {
+		return deathCount;
+	}
+
+	public void setDeathCount(int deathCount) {
+		this.deathCount = deathCount;
 	}
 	
 

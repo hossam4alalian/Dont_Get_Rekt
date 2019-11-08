@@ -28,7 +28,7 @@ public class Player{
 	
 	private boolean lookLeft=false;
 	
-	private int deathCount;
+	
 
 
 	private Hitbox hitbox;
@@ -37,7 +37,7 @@ public class Player{
 	static BufferedImage playerRightImg=ImageLoader.loadImage("playerRight.png");
 
 	public Player(int x, int y, int size) {
-		setDeathCount(0);
+		
 		this.x=x;
 		this.y=y;
 		this.size=size;
@@ -255,12 +255,7 @@ public class Player{
 	public void setHitbox(Hitbox hitbox) {
 		this.hitbox = hitbox;
 	}
-	public int getDeathCount() {
-		return deathCount;
-	}
-	public void setDeathCount(int deathCount) {
-		this.deathCount = deathCount;
-	}
+
 	public boolean isLookLeft() {
 		return lookLeft;
 	}
