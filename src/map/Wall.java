@@ -3,10 +3,13 @@ package map;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
+
+import hilsDontGetRekt.ImageLoader;
 
 public class Wall extends Cell {
 	
-	
+	static BufferedImage wall=ImageLoader.loadImage("wall.png");
 	
 	public Wall(int column, int row, int size, CellType cellType) {
 		super(column, row, size, cellType);
@@ -14,8 +17,10 @@ public class Wall extends Cell {
 	}
 
 	public void draw(Graphics2D g) {
-		g.setColor(Color.black);
-		g.fillRect(getColumn()*size, getRow()*size, size, size);
+		//g.setColor(Color.black);
+		//g.fillRect(getColumn()*size, getRow()*size, size, size);
+		
+		g.drawImage(wall,getColumn()*size, getRow()*size, size, size, null);
 	}
 	
 	

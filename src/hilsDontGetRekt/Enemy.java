@@ -1,15 +1,19 @@
 package hilsDontGetRekt;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 
 import library.Hitbox;
 import library.PVector2D;
 import library.SamMath;
 import library.Vector2D;
+import map.Cell;
 import map.CellType;
 import map.Grid;
 import map.Wall;
@@ -28,6 +32,7 @@ public class Enemy{
 
 	private Hitbox hitbox;
 
+	static BufferedImage enemyImg=ImageLoader.loadImage("enemy.png");
 	public Enemy(int x, int y, int size) {
 		this.x=x;
 		this.y=y;
@@ -36,15 +41,17 @@ public class Enemy{
 	}
 	//drawing my playing
 	public void draw(Graphics2D g2) {
-		g2.setColor(Color.BLUE);
-		g2.fillOval((int)x, (int)y, (int)size, (int)size);
+		g2.drawImage(enemyImg,(int)x, (int)y, (int)size, (int)size, null);
 		
 		hitbox.setX((float)x);
 		hitbox.setY((float)y);
+		
+		
+		
 	}
 	
 	//when the player moves.
-	public void move(Grid grid, Player p) {
+	public void move(Grid grid, Player p,Graphics2D g2) {
 		double xvel;
 		double yvel;
 		
@@ -72,6 +79,11 @@ public class Enemy{
 		y+=yvel;
 		
 		
+		
+		
+		AstarMove(grid, p,g2);
+		
+		
 		//System.out.println(x+" l");
 		
 		boolean move=intersect2(grid);
@@ -80,6 +92,133 @@ public class Enemy{
 		hitbox.setY((float)y);
 	}
 	
+	
+	public void AstarMove(Grid grid, Player p,Graphics2D g) {
+		ArrayList<spot>openList=new ArrayList<spot>();
+		ArrayList<spot>closedList=new ArrayList<spot>();
+		
+		
+		Vector2D vec=new Vector2D(new PVector2D(x, y), new PVector2D(p.getX(), p.getY()));
+		int dis=(int)(vec.getMagnitude()/40);
+		
+		
+		int colE=(int) (x/grid.getSize());
+		int rowE=(int) (y/grid.getSize());
+		
+		openList.add(new spot(colE, rowE, colE, rowE,0,dis));
+		
+		
+		
+		while(openList.size()>0) {
+			
+			for(int i=0;i<openList.size();i++) {
+				g.setColor(Color.green);
+				g.fillRect(openList.get(i).getColumn()*40, openList.get(i).getRow()*40, 40, 40);
+				g.setColor(Color.white);
+				g.setFont(new Font("", Font.ITALIC, 10));
+				g.drawString(""+openList.get(i).gethCost(), openList.get(i).getColumn()*40, openList.get(i).getRow()*40);
+				g.drawString(""+openList.get(i).getgCost(), openList.get(i).getColumn()*40+25, openList.get(i).getRow()*40);
+			}
+			for(int i=0;i<closedList.size();i++) {
+				g.setColor(Color.red);
+				g.fillRect(openList.get(i).getColumn()*40, openList.get(i).getRow()*40, 40, 40);
+				g.setColor(Color.white);
+				g.setFont(new Font("", Font.ITALIC, 10));
+				g.drawString(""+closedList.get(i).gethCost(), closedList.get(i).getColumn()*40, closedList.get(i).getRow()*40);
+				g.drawString(""+closedList.get(i).getgCost(), closedList.get(i).getColumn()*40+25, closedList.get(i).getRow()*40);
+			}
+			
+			
+			int index=0;
+			for(int i=0;i<openList.size();i++) {
+				
+				float min=1000000;
+				if(openList.get(i).gethCost()+openList.get(i).getgCost()<min) {
+					index=i;
+				}
+			}
+			spot current=openList.get(index);
+			
+			closedList.add(current);
+			openList.remove(current);
+			
+			
+			
+			try {
+			
+				
+			Cell leftCell=grid.getCell(colE-1, rowE);
+			
+			vec=new Vector2D(new PVector2D(leftCell.getColumn(), leftCell.getRow()), new PVector2D(p.getX()/40, p.getY()/40));
+			dis=(int)(vec.getMagnitude());
+			
+			if(leftCell.getCellType()!=CellType.WALL && !isInArray(closedList, leftCell.getColumn(), leftCell.getRow())) {
+				if(!isInArray(openList, leftCell.getColumn(), leftCell.getRow())){
+					
+					openList.add(new spot(leftCell.getColumn(), leftCell.getRow(), current.getColumn(), current.getRow(), current.getgCost()+10, dis));
+					
+				}
+				else {
+					for(int i=0;i<openList.size();i++) {
+						if(openList.get(i).getColumn()==leftCell.getColumn() && openList.get(i).getRow()==leftCell.getRow()) {
+							float fCost=openList.get(i).getgCost()+openList.get(i).gethCost();
+							
+							if(openList.get(i).getgCost()>current.getgCost()+10) {
+								openList.get(i).setParentColumn(current.getColumn());
+								openList.get(i).setParentRow(current.getRow());
+							}
+							
+						}
+					}
+				}
+				
+			}
+			
+			
+			
+			
+			
+			
+			Cell rightCell=grid.getCell(colE+1, rowE);
+			Cell upCell=grid.getCell(colE, rowE-1);
+			Cell downCell=grid.getCell(colE, rowE+1);
+			Cell leftupCell=grid.getCell(colE-1, rowE-1);
+			Cell leftdownCell=grid.getCell(colE-1, rowE+1);
+			Cell rightupCell=grid.getCell(colE+1, rowE-1);
+			Cell rightdownCell=grid.getCell(colE+1, rowE+1);
+			
+			
+			
+			
+			
+			
+				
+				
+				
+				
+			
+				
+				
+			
+			}
+			catch (NullPointerException e) {
+				// TODO: handle exception
+			}
+			
+		
+		}
+		
+		
+	}
+	
+	public boolean isInArray(ArrayList<spot> spots ,int column,int row){
+		for(int i=0;i<spots.size();i++) {
+			if(spots.get(i).getColumn()==column && spots.get(i).getRow()==row) {
+				return true;
+			}
+		}
+		return false;
+	}
 	
 	
 	public boolean intersect2(Grid grid) {

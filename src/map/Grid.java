@@ -2,14 +2,15 @@ package map;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
+
 import java.util.ArrayList;
 
 import hilsDontGetRekt.Enemy;
 import hilsDontGetRekt.Goal;
-import hilsDontGetRekt.ImageLoader;
+
 import hilsDontGetRekt.Key;
 import hilsDontGetRekt.Player;
+import hilsDontGetRekt.Trap;
 import level.Level;
 import library.PVector2D;
 
@@ -37,9 +38,10 @@ public class Grid {
 	private PVector2D goalPos;
 	
 	private ArrayList<Key> key= new ArrayList<Key>();
-	
-	
 	private PVector2D keyPos;
+	
+	private ArrayList<Trap> trap= new ArrayList<Trap>();
+	private PVector2D trapPos;
 	
 	public Grid(int width,int height, int size, Level level) {
 		this.width=width;
@@ -57,11 +59,16 @@ public class Grid {
 				if(color.getRGB()==new Color(255, 255, 255).getRGB()) {
 					cells.add(new Floor(i, ii,size,CellType.FLOOR));
 				}
+				
+				
 				if(color.getRGB()==new Color(0, 255, 0).getRGB()) {
 					cells.add(new GoalCell(i, ii,size,CellType.GOAL));
 					goal=new Goal(i*size, ii*size, size);
 					setGoalPos(new PVector2D(i*size, ii*size) );
 				}
+			
+				
+				
 				if(color.getRGB()==new Color(255, 0, 0).getRGB()) {
 					cells.add(new Floor(i, ii,size,CellType.FLOOR));
 					setPlayerPos(new PVector2D(i*size, ii*size));
@@ -69,7 +76,7 @@ public class Grid {
 					
 				}
 				if(color.getRGB()==new Color(0, 0, 255).getRGB()) {
-					cells.add(new EnemySpawn(i, ii,size,CellType.ENEMYSPAWN));
+					cells.add(new Floor(i, ii,size,CellType.FLOOR));
 					setEnemyPos(new PVector2D(i*size, ii*size));
 					enemy=new Enemy(i*size, ii*size, 30);
 				}
@@ -78,6 +85,18 @@ public class Grid {
 					cells.add(new Floor(i, ii,size,CellType.FLOOR));
 					setKeyPos(new PVector2D(i*size, ii*size));
 					key.add(new Key(i*size, ii*size, size));
+				}
+				
+				if(color.getRGB()==new Color(255, 0, 255).getRGB()) {
+					cells.add(new Floor(i, ii,size,CellType.FLOOR));
+					setTrapPos(new PVector2D(i*size, ii*size));
+					trap.add(new Trap(i*size, ii*size, size, Math.PI));
+				}
+				
+				if(color.getRGB()==new Color(255, 0, 100).getRGB()) {
+					cells.add(new Floor(i, ii,size,CellType.FLOOR));
+					setTrapPos(new PVector2D(i*size, ii*size));
+					trap.add(new Trap(i*size, ii*size, size, Math.PI/2));
 				}
 			}
 		}
@@ -93,6 +112,15 @@ public class Grid {
 	
 	
 	
+	//hämtar cell med hjälp av column och row.
+	public Cell getCell(int column,int row) {
+		for(int i=0;i<cells.size();i++) {
+			if(cells.get(i).getColumn()==column && cells.get(i).getRow()==row) {
+				return cells.get(i);
+			}
+		}
+		return null;
+	}
 	
 	
 	
@@ -198,8 +226,24 @@ public class Grid {
 		return key;
 	}
 
+	public ArrayList<Trap> getTrap() {
+		return trap;
+	}
+
+	public void setTrap(ArrayList<Trap> trap) {
+		this.trap = trap;
+	}
+
 	public void setKey(ArrayList<Key> key) {
 		this.key = key;
+	}
+
+	public PVector2D getTrapPos() {
+		return trapPos;
+	}
+
+	public void setTrapPos(PVector2D trapPos) {
+		this.trapPos = trapPos;
 	}
 	
 	

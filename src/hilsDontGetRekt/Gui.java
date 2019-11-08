@@ -1,6 +1,7 @@
 package hilsDontGetRekt;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.MouseInfo;
@@ -18,8 +19,12 @@ import map.Grid;
 
 public class Gui extends JPanel implements KeyListener {
 	
-	Grid grid;
+	public static Grid grid;
 	
+	static BufferedImage skull=ImageLoader.loadImage("skull.png");
+	
+	static BufferedImage key=	ImageLoader.loadImage("key.png");
+
 	public Gui() {
 		setFocusable(true);
 		addKeyListener(this);
@@ -57,12 +62,11 @@ public class Gui extends JPanel implements KeyListener {
 			grid.getEnemy().setX(grid.getEnemyPos().getX());
 			grid.getEnemy().setY(grid.getEnemyPos().getY());
 			
-			//key.setX(grid.getKeyPos().getX());
-			//key.setY(grid.getKeyPos().getY());
 			
 			dead=false;
 		}
 		grid.draw(g2d);
+		
 		
 		enemyUpdate();
 		playerUpdate();
@@ -71,10 +75,14 @@ public class Gui extends JPanel implements KeyListener {
 			grid.getKey().get(i).draw(g2d);
 		}
 		
+		trapUpdate();
+		
+		g2d.setFont(new Font("TimesRoman", Font.PLAIN, 40)); 
 		
 		
-		
+		userInterface();
 		g.drawImage(image, 0, 0,Main.width(),Main.height(), null);
+		
 		//game
 		long last = System.nanoTime()/1000000;
 		update(first,last);
@@ -110,14 +118,51 @@ public class Gui extends JPanel implements KeyListener {
 		
 	}
 	
+	
+	
 	public void enemyUpdate() {
 		grid.getEnemy().draw(g2d);
-		grid.getEnemy().move(grid, grid.getPlayer());
+		grid.getEnemy().move(grid, grid.getPlayer(),g2d);
 		
 	}
 	
-	
+	public void trapUpdate() {
+		for(int i=0;i<grid.getTrap().size();i++) {
+			grid.getTrap().get(i).draw(g2d);
+		}
 		
+		for(int i=0;i<grid.getTrap().size();i++) {
+			grid.getTrap().get(i).move(grid);
+		}
+		
+		for(int i=0;i<grid.getTrap().size();i++){
+			
+			if(grid.getTrap().get(i).getHitbox().intersect(grid.getPlayer().getHitbox())) {
+				dead=true;
+				grid.getPlayer().setDeathCount(grid.getPlayer().getDeathCount()+1);
+				
+				
+			}
+		}
+	}
+	
+	
+	public void userInterface() {
+		
+		g2d.drawImage(skull, 0, 0,40,40, null);
+		
+		g2d.setColor(Color.WHITE);
+		g2d.drawString(""+grid.getPlayer().getDeathCount(), 40, 32);
+		
+		g2d.setColor(Color.WHITE);
+		g2d.drawImage(key, 90, 0,40,40, null);
+
+		g2d.drawString(": "+(grid.getKey().size()), 130, 32);
+		
+		
+		g2d.setColor(Color.WHITE);
+		g2d.drawString("Level: "+(currentLevel+1), 620, 32);
+	}
 		
 	
 	

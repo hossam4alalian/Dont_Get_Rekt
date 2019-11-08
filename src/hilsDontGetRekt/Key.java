@@ -2,6 +2,7 @@ package hilsDontGetRekt;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 
 import library.Hitbox;
 import library.PVector2D;
@@ -11,6 +12,8 @@ import map.Grid;
 
 
 public class Key{
+	static BufferedImage key=ImageLoader.loadImage("key.png");
+	
 	private double x;
 	private double y;
 	private double size;
@@ -26,8 +29,9 @@ public class Key{
 	}
 	//drawing my playing
 	public void draw(Graphics2D g2) {
-		g2.setColor(Color.YELLOW);
-		g2.fillOval((int)x, (int)y, (int)size, (int)size);
+		
+		
+		g2.drawImage(key, (int)x, (int)y, (int)size, (int)size, null);
 		
 		hitbox.setX((float)x);
 		hitbox.setY((float)y);

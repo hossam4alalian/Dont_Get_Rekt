@@ -5,6 +5,7 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.image.BufferedImage;
 
 import library.Hitbox;
 import library.PVector2D;
@@ -25,10 +26,15 @@ public class Player{
 	private boolean left=false;
 	private boolean right=false;
 	
+	private boolean lookLeft=false;
+	
 	private int deathCount;
 
 
 	private Hitbox hitbox;
+	
+	static BufferedImage playerLeftImg=ImageLoader.loadImage("playerLeft.png");
+	static BufferedImage playerRightImg=ImageLoader.loadImage("playerRight.png");
 
 	public Player(int x, int y, int size) {
 		setDeathCount(0);
@@ -39,8 +45,21 @@ public class Player{
 	}
 	//drawing my playing
 	public void draw(Graphics2D g2) {
-		g2.setColor(Color.RED);
-		g2.fillOval((int)x, (int)y, (int)size, (int)size);
+		
+		
+		if(left || lookLeft) {
+			g2.drawImage(playerLeftImg,(int)x, (int)y, (int)size, (int)size, null);
+			lookLeft=true;
+		}
+		else if(right || lookLeft==false) {
+			lookLeft=false;
+			g2.drawImage(playerRightImg,(int)x, (int)y, (int)size, (int)size, null);
+		}
+		else {
+			
+			g2.drawImage(playerRightImg,(int)x, (int)y, (int)size, (int)size, null);
+		}
+		
 		
 		hitbox.setX((float)x);
 		hitbox.setY((float)y);
@@ -59,9 +78,11 @@ public class Player{
 			angle=Math.PI/2;
 		}
 		if(left) {
+			lookLeft=true;
 			angle=Math.PI;
 		}
 		if(right) {
+			lookLeft=false;
 			angle=0;
 		}
 		if(up&right) {
@@ -116,10 +137,39 @@ public class Player{
 		for(int i=0;i<grid.getCells().size();i++){
 			if(grid.getCells().get(i).getCellType()==CellType.WALL) {
 				PVector2D vec=grid.getCells().get(i).getHitbox().intersectFixOverlap(hitbox);
-				x+=vec.getX();
-				y+=vec.getY();
-				if(vec.getX()>0 || vec.getY()>0) {
-					temp=true;
+				
+				boolean stop=false;
+				try {
+					if(vec.getY()<0) {
+					
+						if(grid.getCell(grid.getCells().get(i).getColumn(), grid.getCells().get(i).getRow()-1).getCellType()==CellType.WALL) {
+							stop=true;
+						}
+					}
+					if(vec.getY()>0) {
+						
+						if(grid.getCell(grid.getCells().get(i).getColumn(), grid.getCells().get(i).getRow()+1).getCellType()==CellType.WALL) {
+							stop=true;
+						}
+					}
+					
+				
+				
+				}
+				
+				catch (NullPointerException e) {
+					// TODO: handle exception
+				}
+				
+				
+				if(!stop) {
+					x+=vec.getX();
+					y+=vec.getY();
+					if(vec.getX()>0 || vec.getY()>0) {
+						temp=true;
+					}
+					hitbox.setX((float)x);
+					hitbox.setY((float)y);
 				}
 			}
 		}
@@ -210,6 +260,12 @@ public class Player{
 	}
 	public void setDeathCount(int deathCount) {
 		this.deathCount = deathCount;
+	}
+	public boolean isLookLeft() {
+		return lookLeft;
+	}
+	public void setLookLeft(boolean lookLeft) {
+		this.lookLeft = lookLeft;
 	}
 	
 	

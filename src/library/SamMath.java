@@ -30,7 +30,7 @@ public class SamMath {
 		double disUpp2=(delX*delX)+(delY*delY);
 		double dis= Math.sqrt(disUpp2);
 		
-		double angle=Math.sin(-delY/dis+0.01);
+		double angle=Math.asin(-delY/dis);
 		if(delX<0) {
 			angle=Math.PI-angle;
 		}
