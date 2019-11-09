@@ -38,7 +38,7 @@ public class Trap{
 		this.size=size;
 		hitbox=new Hitbox((int)x, (int)y, (int)size, (int)size);
 		
-		speed=6;
+		speed=4;
 		this.angle=angle;
 	}
 	//drawing my playing
@@ -58,6 +58,7 @@ public class Trap{
 	
 	//when the player moves.
 	public void move(Grid grid) {
+		
 		double xvel;
 		double yvel;
 		

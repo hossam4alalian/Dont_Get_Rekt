@@ -38,6 +38,7 @@ public class Enemy{
 		this.y=y;
 		this.size=size;
 		hitbox=new Hitbox((int)x, (int)y, (int)size, (int)size);
+		angle=0;
 	}
 	//drawing my playing
 	public void draw(Graphics2D g2) {
@@ -55,9 +56,9 @@ public class Enemy{
 		double xvel;
 		double yvel;
 		
-		angle=SamMath.angle(x, y, p.getX(), p.getY());
 		
-		speed=3;
+		angle=SamMath.angle(x, y, p.getX(), p.getY());
+		speed=2.5;
 		/*if(p.getY()>y) {
 			angle=Math.PI*1.5;
 		}
@@ -71,20 +72,26 @@ public class Enemy{
 			angle=0;
 		}*/
 		
+		Vector2D vec=new Vector2D(new PVector2D(x, y), new PVector2D(p.getX(), p.getY()));
+		int dis=(int)(vec.getMagnitude());
 		
-		/*yvel=speed*Math.sin(angle);
-		xvel=speed*Math.cos(angle);
+		if(dis<40) {
+			
+			
+			
+			yvel=speed*Math.sin(angle);
+			xvel=-speed*Math.cos(angle);
+			
+			x+=xvel;
+			y+=yvel;
+		}
+		else {
+			AstarMove(grid, p,g2);
+		}
 		
-		x-=xvel;
-		y+=yvel;
-		*/
 		
 		
 		
-		//AstarMove(grid, p,g2);
-		
-		
-		//System.out.println(x+" l");
 		
 		boolean move=intersect2(grid);
 		
@@ -102,8 +109,8 @@ public class Enemy{
 		int dis=(int)(vec.getMagnitude()/40);
 		
 		
-		int colE=(int) (x/grid.getSize());
-		int rowE=(int) (y/grid.getSize());
+		int colE=(int) ((x+10)/grid.getSize());
+		int rowE=(int) ((y+10)/grid.getSize());
 		
 		openList.add(new spot(colE, rowE, colE, rowE,0,dis));
 		
@@ -111,22 +118,6 @@ public class Enemy{
 		
 		while(openList.size()>0) {
 			
-			/*for(int i=0;i<openList.size();i++) {
-				g.setColor(Color.green);
-				g.fillRect(openList.get(i).getColumn()*40, openList.get(i).getRow()*40, 40, 40);
-				g.setColor(Color.white);
-				g.setFont(new Font("", Font.ITALIC, 10));
-				//g.drawString(""+openList.get(i).gethCost(), openList.get(i).getColumn()*40+5, openList.get(i).getRow()*40);
-				//g.drawString(""+openList.get(i).getgCost(), openList.get(i).getColumn()*40+25, openList.get(i).getRow()*40);
-			}
-			for(int i=0;i<closedList.size();i++) {
-				g.setColor(Color.red);
-				g.fillRect(closedList.get(i).getColumn()*40, closedList.get(i).getRow()*40, 40, 40);
-				g.setColor(Color.white);
-				g.setFont(new Font("", Font.ITALIC, 10));
-				//g.drawString(""+closedList.get(i).gethCost(), closedList.get(i).getColumn()*40+5, closedList.get(i).getRow()*40);
-				//g.drawString(""+closedList.get(i).getgCost(), closedList.get(i).getColumn()*40+25, closedList.get(i).getRow()*40);
-			}*/
 			
 			
 			int index=0;
@@ -142,41 +133,40 @@ public class Enemy{
 			spot current=openList.get(index);
 			
 			
-			if(current.gethCost()<0.2) {//måste ändras!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+			if(current.gethCost()<0.1) {
 				spot temp=current;
-				
-				
 				boolean done=false;
+				int c=0;
 				while(done==false) {
 					
 					
 					boolean doneTemp=true;
 					for(int i=0;i<closedList.size();i++) {
-						//System.out.println(closedList.get(i).getParentColumn()+"   "+temp.getColumn());
-						if(temp.getColumn()!=temp.getParentColumn() && temp.getColumn()!=temp.getParentColumn()) {
+						Vector2D dis2=new Vector2D(new PVector2D(colE, rowE),new PVector2D(closedList.get(i).getColumn(), closedList.get(i).getRow()));
+						if( /*dis2.getMagnitude()>1*/ closedList.get(i).getColumn()!=colE || closedList.get(i).getRow()!=rowE) {
 							if(temp.getParentColumn()==closedList.get(i).getColumn() && temp.getParentRow()==closedList.get(i).getRow()) {
-								System.out.println(temp.getParentColumn()+"   "+closedList.get(i).getColumn());
 								temp=closedList.get(i);
 								doneTemp=false;
 								
 							}
 						}
 					}
-					System.out.println("************");
 					
 					if(doneTemp) {
 						done=true;
 					}
 					
+					//g.setColor(Color.black);
+					//g.fillOval(temp.getColumn()*40, temp.getRow()*40, 40, 40);
+					
 				}
 				
-				g.setColor(Color.green);
-				g.fillOval(temp.getColumn()*40, temp.getRow()*40, 40, 40);
+				
 				
 				Vector2D moveDir=new Vector2D(new PVector2D(x/40, y/40), new PVector2D(temp.getColumn(), temp.getRow()));
 				
-				x+=Math.cos(moveDir.getAngle())*2;
-				y+=Math.sin(moveDir.getAngle())*2;
+				x+=Math.cos(moveDir.getAngle())*speed;
+				y+=Math.sin(moveDir.getAngle())*speed;
 				
 				return;
 			}
@@ -191,6 +181,7 @@ public class Enemy{
 				
 			Cell leftCell=grid.getCell(current.getColumn()-1, current.getRow());
 			
+			try {
 			vec=new Vector2D(new PVector2D(leftCell.getColumn(), leftCell.getRow()), new PVector2D(p.getX()/40, p.getY()/40));
 			dis=(int)(vec.getMagnitude());
 			
@@ -216,14 +207,17 @@ public class Enemy{
 				
 			}
 			
-			
+			}
+			catch (NullPointerException e) {
+				// TODO: handle exception
+			}
 			
 			
 			
 			
 			Cell rightCell=grid.getCell(current.getColumn()+1, current.getRow());
 			
-			
+			try {
 			vec=new Vector2D(new PVector2D(rightCell.getColumn(), rightCell.getRow()), new PVector2D(p.getX()/40, p.getY()/40));
 			dis=(int)(vec.getMagnitude());
 			
@@ -250,6 +244,10 @@ public class Enemy{
 			}
 			
 			
+			}
+			catch (NullPointerException e) {
+				// TODO: handle exception
+			}
 			
 			
 			
@@ -260,6 +258,7 @@ public class Enemy{
 			Cell upCell=grid.getCell(current.getColumn(), current.getRow()-1);
 			
 			
+			try {
 			vec=new Vector2D(new PVector2D(upCell.getColumn(), upCell.getRow()), new PVector2D(p.getX()/40, p.getY()/40));
 			dis=(int)(vec.getMagnitude());
 			
@@ -286,7 +285,10 @@ public class Enemy{
 			}
 			
 			
-			
+			}
+			catch (NullPointerException e) {
+				// TODO: handle exception
+			}
 			
 			
 			
@@ -302,7 +304,7 @@ public class Enemy{
 			
 			Cell downCell=grid.getCell(current.getColumn(), current.getRow()+1);
 			
-			
+			try {
 			vec=new Vector2D(new PVector2D(downCell.getColumn(), downCell.getRow()), new PVector2D(p.getX()/40, p.getY()/40));
 			dis=(int)(vec.getMagnitude());
 			
@@ -328,7 +330,10 @@ public class Enemy{
 				
 			}
 			
-			
+			}
+			catch (NullPointerException e) {
+				// TODO: handle exception
+			}
 			
 			
 			
@@ -350,11 +355,11 @@ public class Enemy{
 			
 			Cell leftupCell=grid.getCell(current.getColumn()-1, current.getRow()-1);
 
-			
+			try {
 			vec=new Vector2D(new PVector2D(leftupCell.getColumn(), leftupCell.getRow()), new PVector2D(p.getX()/40, p.getY()/40));
 			dis=(int)(vec.getMagnitude());
 			
-			if(leftupCell.getCellType()!=CellType.WALL && !isInArray(closedList, leftupCell.getColumn(), leftupCell.getRow())) {
+			if(leftupCell.getCellType()!=CellType.WALL && upCell.getCellType()!=CellType.WALL && leftCell.getCellType()!=CellType.WALL && !isInArray(closedList, leftupCell.getColumn(), leftupCell.getRow())) {
 				if(!isInArray(openList, leftupCell.getColumn(), leftupCell.getRow())){
 					
 					openList.add(new spot(leftupCell.getColumn(), leftupCell.getRow(), current.getColumn(), current.getRow(), current.getgCost()+14, dis));
@@ -377,7 +382,10 @@ public class Enemy{
 			}
 			
 			
-			
+			}
+			catch (NullPointerException e) {
+				// TODO: handle exception
+			}
 			
 			
 			
@@ -385,11 +393,11 @@ public class Enemy{
 			
 			Cell leftdownCell=grid.getCell(current.getColumn()-1, current.getRow()+1);
 			
-			
+			try {
 			vec=new Vector2D(new PVector2D(leftdownCell.getColumn(), leftdownCell.getRow()), new PVector2D(p.getX()/40, p.getY()/40));
 			dis=(int)(vec.getMagnitude());
 			
-			if(leftdownCell.getCellType()!=CellType.WALL && !isInArray(closedList, leftdownCell.getColumn(), leftdownCell.getRow())) {
+			if(leftdownCell.getCellType()!=CellType.WALL && downCell.getCellType()!=CellType.WALL && leftCell.getCellType()!=CellType.WALL  && !isInArray(closedList, leftdownCell.getColumn(), leftdownCell.getRow())) {
 				if(!isInArray(openList, leftdownCell.getColumn(), leftdownCell.getRow())){
 					
 					openList.add(new spot(leftdownCell.getColumn(), leftdownCell.getRow(), current.getColumn(), current.getRow(), current.getgCost()+14, dis));
@@ -411,6 +419,12 @@ public class Enemy{
 				
 			}
 			
+			}
+			catch (NullPointerException e) {
+				// TODO: handle exception
+			}
+			
+			
 			
 			
 			
@@ -420,11 +434,11 @@ public class Enemy{
 			
 			
 
-			
+			try {
 			vec=new Vector2D(new PVector2D(rightupCell.getColumn(), rightupCell.getRow()), new PVector2D(p.getX()/40, p.getY()/40));
 			dis=(int)(vec.getMagnitude());
 			
-			if(rightupCell.getCellType()!=CellType.WALL && !isInArray(closedList, rightupCell.getColumn(), rightupCell.getRow())) {
+			if(rightupCell.getCellType()!=CellType.WALL && upCell.getCellType()!=CellType.WALL && rightCell.getCellType()!=CellType.WALL  && !isInArray(closedList, rightupCell.getColumn(), rightupCell.getRow())) {
 				if(!isInArray(openList, rightupCell.getColumn(), rightupCell.getRow())){
 					
 					openList.add(new spot(rightupCell.getColumn(), rightupCell.getRow(), current.getColumn(), current.getRow(), current.getgCost()+14, dis));
@@ -447,7 +461,10 @@ public class Enemy{
 			}
 			
 			
-			
+			}
+			catch (NullPointerException e) {
+				// TODO: handle exception
+			}
 			
 			
 			
@@ -462,11 +479,11 @@ public class Enemy{
 			
 			
 			
-			
+			try {
 			vec=new Vector2D(new PVector2D(rightdownCell.getColumn(), rightdownCell.getRow()), new PVector2D(p.getX()/40, p.getY()/40));
 			dis=(int)(vec.getMagnitude());
 			
-			if(rightdownCell.getCellType()!=CellType.WALL && !isInArray(closedList, rightdownCell.getColumn(), rightdownCell.getRow())) {
+			if(rightdownCell.getCellType()!=CellType.WALL && downCell.getCellType()!=CellType.WALL && rightCell.getCellType()!=CellType.WALL  && !isInArray(closedList, rightdownCell.getColumn(), rightdownCell.getRow())) {
 				if(!isInArray(openList, rightdownCell.getColumn(), rightdownCell.getRow())){
 					
 					openList.add(new spot(rightdownCell.getColumn(), rightdownCell.getRow(), current.getColumn(), current.getRow(), current.getgCost()+14, dis));
@@ -488,7 +505,10 @@ public class Enemy{
 				
 			}
 			
-			
+			}
+			catch (NullPointerException e) {
+				// TODO: handle exception
+			}
 			
 			
 				

@@ -9,11 +9,20 @@ import hilsDontGetRekt.ImageLoader;
 public class Floor extends Cell{
 
 	
-	static BufferedImage floor=ImageLoader.loadImage("floor.png");
+	BufferedImage floor;
 	
 	public Floor(int column, int row, int size, CellType cellType) {
 		super(column, row, size, cellType);
-		// TODO Auto-generated constructor stub
+		
+		if((int)(Math.random()*2)==0) {
+			floor=ImageLoader.loadImage("floor.png");
+		}
+		else if((int)(Math.random()*6)==0) {
+			floor=ImageLoader.loadImage("floor3.png");
+		}
+		else {
+			floor=ImageLoader.loadImage("floor2.png");
+		}
 	}
 
 	@Override

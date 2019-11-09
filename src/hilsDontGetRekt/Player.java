@@ -66,64 +66,71 @@ public class Player{
 	}
 	
 	//when the player moves.
-	public void move(Grid grid) {
-		double xvel;
-		double yvel;
+	public void move(Grid grid, boolean moving) {
 		
-		speed=4;
-		if(up) {
-			angle=Math.PI*1.5;
+		if(moving) {
+			double xvel;
+			double yvel;
+			
+			speed=4;
+			
+			
+			if(up) {
+				angle=Math.PI*1.5;
+			}
+			if(down) {
+				angle=Math.PI/2;
+			}
+			if(left) {
+				lookLeft=true;
+				angle=Math.PI;
+			}
+			if(right) {
+				lookLeft=false;
+				angle=0;
+			}
+			if(up&right) {
+				angle=Math.PI*1.8;
+			}
+			if(up&left) {
+				angle=Math.PI*1.25;
+			}
+			if(down&left) {
+				angle=Math.PI/1.33;
+			}
+			if(down&right) {
+				angle=Math.PI/4;
+			}
+			if(up&down) {
+				speed=0;
+				angle=0;
+			}
+			if(right&left) {
+				speed=0;
+				angle=0;
+			}
+			if(up==false&&down==false&&right==false&&left==false){
+				speed=0;
+			}
+			
+			
+			
+			yvel=speed*Math.sin(angle);
+			xvel=speed*Math.cos(angle);
+			
+			x+=xvel;
+			y+=yvel;
+			
+			hitbox.setX((float)x);
+			hitbox.setY((float)y);
+			
+			boolean move=intersect2(grid);
 		}
-		if(down) {
-			angle=Math.PI/2;
-		}
-		if(left) {
-			lookLeft=true;
-			angle=Math.PI;
-		}
-		if(right) {
-			lookLeft=false;
-			angle=0;
-		}
-		if(up&right) {
-			angle=Math.PI*1.8;
-		}
-		if(up&left) {
-			angle=Math.PI*1.25;
-		}
-		if(down&left) {
-			angle=Math.PI/1.33;
-		}
-		if(down&right) {
-			angle=Math.PI/4;
-		}
-		if(up&down) {
-			speed=0;
-			angle=0;
-		}
-		if(right&left) {
-			speed=0;
-			angle=0;
-		}
-		if(up==false&&down==false&&right==false&&left==false){
-			speed=0;
+		else {
+			moving=false;
 		}
 		
 		
-		
-		
-		
-		
-		yvel=speed*Math.sin(angle);
-		xvel=speed*Math.cos(angle);
-		
-		x+=xvel;
-		y+=yvel;
-		
-		hitbox.setX((float)x);
-		hitbox.setY((float)y);
-		
-		boolean move=intersect2(grid);
 		
 		
 	}

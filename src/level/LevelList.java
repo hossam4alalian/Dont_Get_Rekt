@@ -9,6 +9,10 @@ public class LevelList {
 	public LevelList() {
 		levels.add(new Level("map1.png"));
 		levels.add(new Level("map2.png"));
+		levels.add(new Level("map3.png"));
+		levels.add(new Level("map4.png"));
+		levels.add(new Level("maze.png"));
+		levels.add(new Level("winMap.png"));
 	}
 
 	

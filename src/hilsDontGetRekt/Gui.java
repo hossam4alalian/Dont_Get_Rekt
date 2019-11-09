@@ -37,6 +37,8 @@ public class Gui extends JPanel implements KeyListener {
 	boolean dead=false;
 	boolean paused=false;
 	
+	boolean menu=true;
+	
 	private int deathCount;
 	
 	
@@ -47,60 +49,102 @@ public class Gui extends JPanel implements KeyListener {
 	public void paint(Graphics g) {
 		long first = System.nanoTime() /1000000;
 		//game
-		g2d.setColor(Color.GRAY);
-		g2d.fillRect(0, 0, getWidth(), getHeight());
 		
 		
-		if(setup) {
-			System.out.println(currentLevel);
-			grid=new Grid(800, 800, 40,levels.getLevels(currentLevel));
+		if(menu) {
+			g2d.setColor(Color.BLACK);
+			g2d.fillRect(0, 0, getWidth(), getHeight());
 			
+			g2d.setFont(new Font("TimesRoman", Font.PLAIN, 40)); 
+			g2d.setColor(Color.YELLOW);
+			g2d.drawString("Don't Get Rekt. ", 100, 60);
 			
-			setup=false;
+			g2d.setFont(new Font("TimesRoman", Font.PLAIN, 25)); 
+			g2d.setColor(Color.WHITE);
+			g2d.drawString("Try to escape as a ghost from death before it gets to you, ", 100, 120);
+			
+			g2d.drawString("remember that you have to get all the keys before escaping. ", 100, 180);
+			
+			g2d.drawString("When you get all the keys a door will appear and you will, ", 100, 240);
+			
+			g2d.drawString("be able to reach the next level, if it gets to you then you  ", 100, 300);
+			
+			g2d.drawString("will reset to the start of the level. ", 100, 360);
+			
+			g2d.setFont(new Font("TimesRoman", Font.PLAIN, 40)); 
+			g2d.setColor(Color.YELLOW);
+			g2d.drawString("Press ENTER to start ", 220, 440);
+			
+			g2d.setColor(Color.WHITE);
+			g2d.drawString("W = UP ", 100, 520);
+			
+			g2d.drawString("S = DOWN ", 100, 580);
+			
+			g2d.drawString("D = RIGHT ", 100, 640);
+			
+			g2d.drawString("A = LEFT ", 100, 700);
+			
+			g2d.drawString("P = PAUSE ", 500, 520);
+			
+			g2d.drawString("R = RESTART ", 500, 580);
+			
+			g2d.drawString("ENTER = MENU ", 500, 640);
 		}
-		if(dead) {
-			grid.getPlayer().setX(grid.getPlayerPos().getX());
-			grid.getPlayer().setY(grid.getPlayerPos().getY());
+		if(menu==false) {
+			if(setup) {
+				System.out.println(currentLevel);
+				grid=new Grid(800, 800, 40,levels.getLevels(currentLevel));
+				
+				
+				setup=false;
+			}
+			if(dead) {
+				grid.getPlayer().setX(grid.getPlayerPos().getX());
+				grid.getPlayer().setY(grid.getPlayerPos().getY());
+				
+				grid.getEnemy().setX(grid.getEnemyPos().getX());
+				grid.getEnemy().setY(grid.getEnemyPos().getY());
+				
+				deathCount+=1;
+				setup=true;
+				dead=false;
+			}
+			grid.draw(g2d);
 			
-			grid.getEnemy().setX(grid.getEnemyPos().getX());
-			grid.getEnemy().setY(grid.getEnemyPos().getY());
 			
-			grid.getPlayer().setDeathCount(deathCount+1);
-			dead=false;
+			enemyUpdate();
+			playerUpdate();
+			
+			for(int i=0;i<grid.getKey().size();i++) {
+				grid.getKey().get(i).draw(g2d);
+			}
+			
+			trapUpdate();
+			
+			
+			
+			
+			userInterface();
+			
 		}
-		grid.draw(g2d);
-		
-		
-		enemyUpdate();
-		playerUpdate();
-		
-		for(int i=0;i<grid.getKey().size();i++) {
-			grid.getKey().get(i).draw(g2d);
-		}
-		
-		trapUpdate();
-		
-		g2d.setFont(new Font("TimesRoman", Font.PLAIN, 40)); 
-		
-		
-		userInterface();
 		g.drawImage(image, 0, 0,Main.width(),Main.height(), null);
 		
 		//game
 		long last = System.nanoTime()/1000000;
 		update(first,last);
+		
 		repaint();
 	}
 	
 	//alla våra objects move function
 	public void playerUpdate() {
 		grid.getPlayer().draw(g2d);
-		grid.getPlayer().move(grid);
+		grid.getPlayer().move(grid, paused==false);
 		
 		if(grid.getPlayer().getHitbox().intersect(grid.getEnemy().getHitbox())) {
 			dead=true;
 			
-			System.out.println(grid.getPlayer().getDeathCount());
+			
 		}
 		
 		
@@ -125,7 +169,10 @@ public class Gui extends JPanel implements KeyListener {
 	
 	public void enemyUpdate() {
 		grid.getEnemy().draw(g2d);
-		grid.getEnemy().move(grid, grid.getPlayer(),g2d);
+		if(paused==false) {
+			grid.getEnemy().move(grid, grid.getPlayer(),g2d);
+		}
+		
 		
 	}
 	
@@ -133,9 +180,11 @@ public class Gui extends JPanel implements KeyListener {
 		for(int i=0;i<grid.getTrap().size();i++) {
 			grid.getTrap().get(i).draw(g2d);
 		}
-		
-		for(int i=0;i<grid.getTrap().size();i++) {
-			grid.getTrap().get(i).move(grid);
+		if(paused==false) {
+			for(int i=0;i<grid.getTrap().size();i++) {
+				grid.getTrap().get(i).move(grid);
+			}
+			
 		}
 		
 		for(int i=0;i<grid.getTrap().size();i++){
@@ -151,11 +200,11 @@ public class Gui extends JPanel implements KeyListener {
 	
 	
 	public void userInterface() {
-		
+		g2d.setFont(new Font("TimesRoman", Font.PLAIN, 40)); 
 		g2d.drawImage(skull, 0, 0,40,40, null);
 		
 		g2d.setColor(Color.WHITE);
-		g2d.drawString(""+grid.getPlayer().getDeathCount(), 40, 32);
+		g2d.drawString(""+deathCount, 40, 32);
 		
 		g2d.setColor(Color.WHITE);
 		g2d.drawImage(key, 90, 0,40,40, null);
@@ -224,61 +273,80 @@ public class Gui extends JPanel implements KeyListener {
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		if(e.getKeyCode()==KeyEvent.VK_W) {
-			grid.getPlayer().setUp(true);
-		}
-		
-		if(e.getKeyCode()==KeyEvent.VK_A) {
-			grid.getPlayer().setLeft(true);
-		}
-		
-		if(e.getKeyCode()==KeyEvent.VK_D) {
-			grid.getPlayer().setRight(true);
-		}
-		
-		if(e.getKeyCode()==KeyEvent.VK_S) {
-			grid.getPlayer().setDown(true);
-		}
-		
-		if(e.getKeyCode()==KeyEvent.VK_P) {
-			if(paused==false) {
-				paused=true;
-			}
-			else if(paused) {
-				paused=false;
-			}
+			if(!menu) {
+				if(e.getKeyCode()==KeyEvent.VK_W) {
+					grid.getPlayer().setUp(true);
+				}
+				
+				if(e.getKeyCode()==KeyEvent.VK_A) {
+					grid.getPlayer().setLeft(true);
+				}
+				
+				if(e.getKeyCode()==KeyEvent.VK_D) {
+					grid.getPlayer().setRight(true);
+				}
+				
+				if(e.getKeyCode()==KeyEvent.VK_S) {
+					grid.getPlayer().setDown(true);
+				}
+				
+				if(e.getKeyCode()==KeyEvent.VK_P) {
+					if(paused==false) {
+						paused=true;
+					}
+					else if(paused) {
+						paused=false;
+					}
+					
+				}
+				if(e.getKeyCode()==KeyEvent.VK_DELETE) {
+					currentLevel++;
+					setup=true;
+				}
 			
 		}
+			
+			if(e.getKeyCode()==KeyEvent.VK_R) {
+				setup=true;
+				deathCount=0;
+				currentLevel=0;
+			}
 		
-		if(e.getKeyCode()==KeyEvent.VK_R) {
-			setup=true;
-			grid.getPlayer().setDeathCount(0);
-			currentLevel=0;
-		}
 		
+			if(e.getKeyCode()==KeyEvent.VK_ENTER) {
+				if(menu) {
+					menu=false;
+				}
+				else if(menu==false) {
+					menu=true;
+				}
+				
+			}
 		
 	}
 
 	@Override
 	public void keyReleased(KeyEvent e) {
-		if(e.getKeyCode()==KeyEvent.VK_W) {
-			grid.getPlayer().setUp(false);
-			grid.getPlayer().setSpeed(0);
-		}
-		
-		if(e.getKeyCode()==KeyEvent.VK_A) {
-			grid.getPlayer().setLeft(false);
-			grid.getPlayer().setSpeed(0);
-		}
-		
-		if(e.getKeyCode()==KeyEvent.VK_D) {
-			grid.getPlayer().setRight(false);
-			grid.getPlayer().setSpeed(0);
-		}
-		
-		if(e.getKeyCode()==KeyEvent.VK_S) {
-			grid.getPlayer().setDown(false);
-			grid.getPlayer().setSpeed(0);
+		if(!menu) {
+			if(e.getKeyCode()==KeyEvent.VK_W) {
+				grid.getPlayer().setUp(false);
+				grid.getPlayer().setSpeed(0);
+			}
+			
+			if(e.getKeyCode()==KeyEvent.VK_A) {
+				grid.getPlayer().setLeft(false);
+				grid.getPlayer().setSpeed(0);
+			}
+			
+			if(e.getKeyCode()==KeyEvent.VK_D) {
+				grid.getPlayer().setRight(false);
+				grid.getPlayer().setSpeed(0);
+			}
+			
+			if(e.getKeyCode()==KeyEvent.VK_S) {
+				grid.getPlayer().setDown(false);
+				grid.getPlayer().setSpeed(0);
+			}
 		}
 		
 	}
