@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import javax.swing.JPanel;
 
 import level.LevelList;
+import library.PVector2D;
+import library.Vector2D;
 import map.Grid;
 
 public class Gui extends JPanel implements KeyListener {
@@ -24,6 +26,8 @@ public class Gui extends JPanel implements KeyListener {
 	static BufferedImage skull=ImageLoader.loadImage("skull.png");
 	
 	static BufferedImage key=	ImageLoader.loadImage("key.png");
+	
+	static BufferedImage filter=ImageLoader.loadImage("filter.png");
 
 	public Gui() {
 		setFocusable(true);
@@ -92,7 +96,7 @@ public class Gui extends JPanel implements KeyListener {
 		}
 		if(menu==false) {
 			if(setup) {
-				System.out.println(currentLevel);
+				//System.out.println(currentLevel);
 				grid=new Grid(800, 800, 40,levels.getLevels(currentLevel));
 				
 				
@@ -111,6 +115,21 @@ public class Gui extends JPanel implements KeyListener {
 			}
 			grid.draw(g2d);
 			
+			/*Light l=new Light(400, 400);
+			for(int i=0;i<20;i++) {
+				for(int ii=0;ii<20;ii++) {
+					Vector2D dis=new Vector2D(new PVector2D(i*40, ii*40),new PVector2D(l.getX(), l.getY()));
+					int col=(int)(dis.getMagnitude()/2);
+					if(col>255) {
+						col=255;
+					}
+					g2d.setColor(new Color(0, 0, 0,col));
+					g2d.fillRect(i*40, ii*40, 40, 40);
+				}
+			}*/
+			
+			
+			//g2d.drawImage(filter, 0, 0,null);
 			
 			enemyUpdate();
 			playerUpdate();
@@ -127,6 +146,8 @@ public class Gui extends JPanel implements KeyListener {
 			userInterface();
 			
 		}
+		
+		
 		g.drawImage(image, 0, 0,Main.width(),Main.height(), null);
 		
 		//game
@@ -151,7 +172,7 @@ public class Gui extends JPanel implements KeyListener {
 		if(grid.getPlayer().getHitbox().intersect(grid.getGoal().getHitbox()) && grid.getKey().size()==0) {
 			currentLevel++;
 			setup=true;
-			System.out.println("you win");
+			//System.out.println("you win");
 		}
 		
 		
@@ -249,11 +270,11 @@ public class Gui extends JPanel implements KeyListener {
 		// checking fps
 		if(dif<(1.0/fps)*1000) {
 			cap=(1000/cap);
-			//System.out.println(cap);
+			System.out.println(cap);
 		}
 		else if(dif>=(1.0/fps)*1000) {
 			dif=(1000/dif);
-			//System.out.println(dif);
+			System.out.println(dif);
 		}
 		
 		

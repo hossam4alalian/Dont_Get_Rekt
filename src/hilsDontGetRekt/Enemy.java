@@ -32,7 +32,10 @@ public class Enemy{
 
 	private Hitbox hitbox;
 
-	static BufferedImage enemyImg=ImageLoader.loadImage("enemy.png");
+	static BufferedImage enemyImg=ImageLoader.loadImage("enemy2.png");
+	
+	
+	
 	public Enemy(int x, int y, int size) {
 		this.x=x;
 		this.y=y;
@@ -75,7 +78,7 @@ public class Enemy{
 		Vector2D vec=new Vector2D(new PVector2D(x, y), new PVector2D(p.getX(), p.getY()));
 		int dis=(int)(vec.getMagnitude());
 		
-		if(dis<40) {
+		if(dis<70) {
 			
 			
 			
@@ -143,7 +146,7 @@ public class Enemy{
 					boolean doneTemp=true;
 					for(int i=0;i<closedList.size();i++) {
 						Vector2D dis2=new Vector2D(new PVector2D(colE, rowE),new PVector2D(closedList.get(i).getColumn(), closedList.get(i).getRow()));
-						if( /*dis2.getMagnitude()>1*/ closedList.get(i).getColumn()!=colE || closedList.get(i).getRow()!=rowE) {
+						if(closedList.get(i).getColumn()!=colE || closedList.get(i).getRow()!=rowE) {
 							if(temp.getParentColumn()==closedList.get(i).getColumn() && temp.getParentRow()==closedList.get(i).getRow()) {
 								temp=closedList.get(i);
 								doneTemp=false;
@@ -182,7 +185,7 @@ public class Enemy{
 			Cell leftCell=grid.getCell(current.getColumn()-1, current.getRow());
 			
 			try {
-			vec=new Vector2D(new PVector2D(leftCell.getColumn(), leftCell.getRow()), new PVector2D(p.getX()/40, p.getY()/40));
+			vec=new Vector2D(new PVector2D(leftCell.getColumn(), leftCell.getRow()), new PVector2D((p.getX()+20)/40, (p.getY()+20)/40));
 			dis=(int)(vec.getMagnitude());
 			
 			if(leftCell.getCellType()!=CellType.WALL && !isInArray(closedList, leftCell.getColumn(), leftCell.getRow())) {
@@ -218,7 +221,7 @@ public class Enemy{
 			Cell rightCell=grid.getCell(current.getColumn()+1, current.getRow());
 			
 			try {
-			vec=new Vector2D(new PVector2D(rightCell.getColumn(), rightCell.getRow()), new PVector2D(p.getX()/40, p.getY()/40));
+			vec=new Vector2D(new PVector2D(rightCell.getColumn(), rightCell.getRow()), new PVector2D((p.getX()+20)/40, (p.getY()+20)/40));
 			dis=(int)(vec.getMagnitude());
 			
 			if(rightCell.getCellType()!=CellType.WALL && !isInArray(closedList, rightCell.getColumn(), rightCell.getRow())) {
@@ -259,7 +262,7 @@ public class Enemy{
 			
 			
 			try {
-			vec=new Vector2D(new PVector2D(upCell.getColumn(), upCell.getRow()), new PVector2D(p.getX()/40, p.getY()/40));
+			vec=new Vector2D(new PVector2D(upCell.getColumn(), upCell.getRow()), new PVector2D((p.getX()+20)/40, (p.getY()+20)/40));
 			dis=(int)(vec.getMagnitude());
 			
 			if(upCell.getCellType()!=CellType.WALL && !isInArray(closedList, upCell.getColumn(), upCell.getRow())) {
@@ -305,7 +308,7 @@ public class Enemy{
 			Cell downCell=grid.getCell(current.getColumn(), current.getRow()+1);
 			
 			try {
-			vec=new Vector2D(new PVector2D(downCell.getColumn(), downCell.getRow()), new PVector2D(p.getX()/40, p.getY()/40));
+			vec=new Vector2D(new PVector2D(downCell.getColumn(), downCell.getRow()), new PVector2D((p.getX()+20)/40, (p.getY()+20)/40));
 			dis=(int)(vec.getMagnitude());
 			
 			if(downCell.getCellType()!=CellType.WALL && !isInArray(closedList, downCell.getColumn(), downCell.getRow())) {
@@ -356,7 +359,7 @@ public class Enemy{
 			Cell leftupCell=grid.getCell(current.getColumn()-1, current.getRow()-1);
 
 			try {
-			vec=new Vector2D(new PVector2D(leftupCell.getColumn(), leftupCell.getRow()), new PVector2D(p.getX()/40, p.getY()/40));
+			vec=new Vector2D(new PVector2D(leftupCell.getColumn(), leftupCell.getRow()), new PVector2D((p.getX()+20)/40, (p.getY()+20)/40));
 			dis=(int)(vec.getMagnitude());
 			
 			if(leftupCell.getCellType()!=CellType.WALL && upCell.getCellType()!=CellType.WALL && leftCell.getCellType()!=CellType.WALL && !isInArray(closedList, leftupCell.getColumn(), leftupCell.getRow())) {
@@ -394,7 +397,7 @@ public class Enemy{
 			Cell leftdownCell=grid.getCell(current.getColumn()-1, current.getRow()+1);
 			
 			try {
-			vec=new Vector2D(new PVector2D(leftdownCell.getColumn(), leftdownCell.getRow()), new PVector2D(p.getX()/40, p.getY()/40));
+			vec=new Vector2D(new PVector2D(leftdownCell.getColumn(), leftdownCell.getRow()), new PVector2D((p.getX()+20)/40, (p.getY()+20)/40));
 			dis=(int)(vec.getMagnitude());
 			
 			if(leftdownCell.getCellType()!=CellType.WALL && downCell.getCellType()!=CellType.WALL && leftCell.getCellType()!=CellType.WALL  && !isInArray(closedList, leftdownCell.getColumn(), leftdownCell.getRow())) {
@@ -435,7 +438,7 @@ public class Enemy{
 			
 
 			try {
-			vec=new Vector2D(new PVector2D(rightupCell.getColumn(), rightupCell.getRow()), new PVector2D(p.getX()/40, p.getY()/40));
+			vec=new Vector2D(new PVector2D(rightupCell.getColumn(), rightupCell.getRow()), new PVector2D((p.getX()+20)/40, (p.getY()+20)/40));
 			dis=(int)(vec.getMagnitude());
 			
 			if(rightupCell.getCellType()!=CellType.WALL && upCell.getCellType()!=CellType.WALL && rightCell.getCellType()!=CellType.WALL  && !isInArray(closedList, rightupCell.getColumn(), rightupCell.getRow())) {
@@ -480,7 +483,7 @@ public class Enemy{
 			
 			
 			try {
-			vec=new Vector2D(new PVector2D(rightdownCell.getColumn(), rightdownCell.getRow()), new PVector2D(p.getX()/40, p.getY()/40));
+			vec=new Vector2D(new PVector2D(rightdownCell.getColumn(), rightdownCell.getRow()), new PVector2D((p.getX()+20)/40, (p.getY()+20)/40));
 			dis=(int)(vec.getMagnitude());
 			
 			if(rightdownCell.getCellType()!=CellType.WALL && downCell.getCellType()!=CellType.WALL && rightCell.getCellType()!=CellType.WALL  && !isInArray(closedList, rightdownCell.getColumn(), rightdownCell.getRow())) {
